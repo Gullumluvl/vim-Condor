@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:	HTCondor submit description file
 " Maintainer:	GullumLuvl
-" Last Change:	2020-02-07
+" Last Change:	2022-01-18
 
 " Usage
 "
@@ -51,7 +51,7 @@ syn region condorMacro matchgroup=condorMacroLim start='\$(' end=')' contained c
 "evaluated on the host machine:
 syn region condorSubstMacro matchgroup=condorMacroLim start='\$\$(' end=')' contained display
 syn case match
-syn region condorMacroFunction matchgroup=condorMacroLim start='\$\(INT\|REAL\|ENV\|DIRNAME\|BASENAME\|RANDOM_INTEGER\|CHOICE\|SUBSTR\|F[fpduwnxbqa]\)(' end=')' contained contains=@Variables ",condorMacroContent
+syn region condorMacroFunction matchgroup=condorMacroLim start='\$\(INT\|REAL\|ENV\|DIRNAME\|BASENAME\|RANDOM_INTEGER\|CHOICE\|SUBSTR\|F[fpduwnxbqa]\+\)(' end=')' contained contains=@Variables ",condorMacroContent
 syn match condorMacroLim '.*' contained
 syn case ignore
 "syn match condorMacroContent '.*' contained  "I'd like this to not be highlighted
@@ -96,6 +96,7 @@ syn match condorSpecialCommand '+\(PreCmd\|PreArgs\|PreArguments\|PreEnv\|PreEnv
 
 "QUEUE COMMANDS
 syn cluster Queued contains=condorQueueOperator,condorQueueIntExpr,condorQueueVarname,condorQueueShellOperator,condorDelimiter,condorQueueItemList
+syn cluster condorQueueOperator contains=condorQueueListOperator,condorQueueGlobOperator
 
 syn region condorQueueExpr matchgroup=condorQueueCommand start='Queue' end='$' contains=@Queued skipnl
 syn match condorQueueIntExpr 'Queue\s\+\zs\d\+' contained display
@@ -106,8 +107,8 @@ syn match condorQueueIntExpr 'Queue\s\+\zs\d\+' contained display
 syn region condorQueueItemList start='(' end=')' contained extend
 syn match condorQueueSlice '[\(\d+\)\?:\(\d\+\)\?\(:\(\d+\)\?)\?]' contained
 "syn match condorQueueListOfItems
-syn keyword condorQueueOperator in matching from nextgroup=condorQueueFilesDirs skipwhite
-syn keyword condorQueueOperator in from nextgroup=condorQueueItemList skipwhite
+syn match condorQueueGlobOperator '\<matching\>\(\s\+\<\(files\|dirs\)\>\)\?' nextgroup=condorQueueFilesDirs skipwhite
+syn keyword condorQueueListOperator in from nextgroup=condorQueueItemList skipwhite
 "nextgroup=condorQueueFilesDirs
 syn keyword condorQueueCommand	Queue nextgroup=condorQueueExpr skipwhite
 syn match condorShellOperator	'|\s\+$' extend display
@@ -139,7 +140,8 @@ hi def link condorSpecialCommand Function
 hi def link condorIncludeCommand Include
 
 hi def link condorQueueCommand Macro
-hi def link condorQueueOperator Operator
+hi def link condorQueueListOperator Operator
+hi def link condorQueueGlobOperator Operator
 hi def link condorQueueIntExpr Number
 hi def link condorDelimiter Delimiter
 
